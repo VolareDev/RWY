@@ -1,0 +1,7 @@
+{
+  "name": "RWY",
+  "description": "",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
