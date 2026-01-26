@@ -265,16 +265,18 @@ const App: React.FC = () => {
       </div>
 
       <footer className="pt-12 border-t border-slate-100 flex flex-col items-center text-center">
-  <div className="text-sm font-bold text-slate-400">
+  <div className="text-sm font-bold text-slate-400 flex items-center gap-2">
     Desarrollado por Daniel Montoto - 2026 - Derechos Reservados. Prohibido su uso no autorizado.{" "}
-    Contacto:{" "}
     <a
       href="https://api.whatsapp.com/send?phone=+541166713894"
       target="_blank"
       rel="noopener noreferrer"
-      className="underline"
+      className="flex items-center gap-1 text-green-500 underline font-bold"
     >
-      Contactame
+      Contacto
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.52 3.48A11.88 11.88 0 0012 0C5.37 0 0 5.37 0 12a11.88 11.88 0 001.48 6.52L0 24l5.52-1.48A11.88 11.88 0 0012 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.18-3.48-8.52zm-8.52 19c-2.05 0-4.04-.54-5.78-1.56l-.41-.24-3.28.88.88-3.28-.25-.41A9.94 9.94 0 012 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.38-7.13c-.29-.14-1.72-.85-1.99-.95-.27-.1-.46-.14-.65.14-.19.27-.73.95-.9 1.15-.17.19-.33.22-.62.08-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.61-1.99-.17-.29-.02-.45.13-.59.14-.14.29-.33.43-.49.14-.17.19-.28.29-.47.1-.19.05-.35-.02-.49-.07-.14-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.37-.01-.57-.01s-.49.07-.74.35c-.25.28-.95.93-.95 2.27 0 1.34.97 2.63 1.1 2.81.14.19 1.9 2.89 4.62 4.05.65.28 1.15.45 1.55.58.65.21 1.24.18 1.71.11.52-.08 1.72-.7 1.96-1.37.24-.67.24-1.24.17-1.36-.07-.11-.27-.17-.57-.31z"/>
+      </svg>
     </a>
   </div>
 </footer>
