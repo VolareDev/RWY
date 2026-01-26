@@ -265,7 +265,18 @@ const App: React.FC = () => {
       </div>
 
       <footer className="pt-12 border-t border-slate-100 flex flex-col items-center text-center">
-        <div className="text-sm font-bold text-slate-400">Desarrollado por Daniel Montoto - 2026</div>
+        <div className="text-sm font-bold text-slate-400">
+          Desarrollado por Daniel Montoto - 2026 - Derechos Reservados. Prohibido su uso no autorizado.{" "}
+          Contacto:{" "}
+          <a
+            href="https://bit.ly/WhappDM"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            https://bit.ly/WhappDM
+          </a>
+        </div>
       </footer>
     </div>
   );
