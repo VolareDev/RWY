@@ -1,58 +1,75 @@
+import { GoogleGenAI } from "@google/genai";
+
 export default async function handler(req: any, res: any) {
   try {
-    const { icao } = req.query;
+    const { id, type } = req.query;
 
-    if (!icao || typeof icao !== "string") {
+    if (!id || !type) {
       return res.status(400).json({
         notams: [],
         isClosed: false,
         sources: [],
-        error: "Missing ICAO parameter (?icao=SAEZ)",
       });
     }
 
-    const FAA_BASE = process.env.FAA_API_BASE;
-
-    if (!FAA_BASE) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       return res.status(500).json({
-        notams: [],
-        isClosed: false,
-        sources: [],
-        error: "FAA_API_BASE not configured",
+        error: "Gemini API key not configured",
       });
     }
 
-    const response = await fetch(
-      `${FAA_BASE}/notams?location=${icao}&format=json`
-    );
+    const ai = new GoogleGenAI({ apiKey });
 
-    if (!response.ok) {
-      throw new Error("FAA API request failed");
-    }
+    const query =
+      type === "AIRPORT"
+        ? `Obtén los NOTAM vigentes para el aeródromo ${id} de Argentina.`
+        : type === "FIR"
+        ? `Obtén los NOTAM vigentes para la FIR ${id} de Argentina.`
+        : `Obtén NOTAMs nacionales de Argentina.`;
 
-    const data = await response.json();
+    const prompt = `
+Analiza información aeronáutica y devuelve NOTAMs.
+Traduce a español aeronáutico claro.
 
-    const notams = (data.items || []).map((n: any) => ({
-      id: n.notamNumber || "UNKNOWN",
-      title: `NOTAM ${n.notamNumber || ""}`,
-      content: n.text || "",
-      raw: n.text || "",
-      category: /CLSD|CLOSED|RWY|RUNWAY/i.test(n.text)
-        ? "critical"
-        : "info",
-      topic: "AGA",
-      start: n.effectiveStart || null,
-      end: n.effectiveEnd || null,
-    }));
+Devuelve SOLO este JSON:
+{
+  "notams": [{
+    "id": "string",
+    "title": "string",
+    "content": "string",
+    "raw": "string",
+    "category": "critical|warning|info",
+    "topic": "AGA|ANS|COM|MET|RAC|OTHERS"
+  }],
+  "isClosed": boolean
+}
 
-    const isClosed = notams.some((n: any) =>
-      /AD CLSD|AERODROME CLOSED|AIRPORT CLOSED/i.test(n.raw)
-    );
+Contexto: ${query}
+`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+      },
+    });
+
+    const data = JSON.parse(response.text || "{}");
 
     return res.status(200).json({
-      notams,
-      isClosed,
-      sources: ["FAA"],
+      notams: data.notams || [],
+      isClosed: !!data.isClosed,
+      sources: ["Gemini + Web"],
     });
-  } catch (error) {
-    console.error("NOTAM API error
+  } catch (err) {
+    console.error("Gemini error:", err);
+    return res.status(500).json({
+      notams: [],
+      isClosed: false,
+      sources: [],
+    });
+  }
+}
