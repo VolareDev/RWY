@@ -5,26 +5,13 @@ export async function fetchNotams(
   type: LocationType
 ): Promise<NotamAnalysisResponse> {
   try {
-    // solo aeródromos por ahora
-    if (type !== "AIRPORT") {
-      return { notams: [], sources: [], isClosed: false };
-    }
+    const res = await fetch(`/api/notams?id=${id}&type=${type}`);
 
-    const res = await fetch(`/api/notams?icao=${id}`);
+    if (!res.ok) throw new Error("API error");
 
-    if (!res.ok) {
-      throw new Error("API /api/notams failed");
-    }
-
-    const data = await res.json();
-
-    return {
-      notams: data.notams || [],
-      sources: data.sources || [],
-      isClosed: !!data.isClosed,
-    };
-  } catch (err) {
-    console.error("fetchNotams error:", err);
+    return await res.json();
+  } catch (e) {
+    console.error(e);
     return { notams: [], sources: [], isClosed: false };
   }
 }
