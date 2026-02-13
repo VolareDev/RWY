@@ -42,6 +42,7 @@ const App: React.FC = () => {
       <div className="max-w-4xl w-full space-y-12">
         <div className="text-center space-y-4">
           <div className="inline-block bg-blue-600 text-white text-[10px] font-black tracking-widest px-4 py-1 rounded-full uppercase mb-4">
+            <div className="inline-block bg-blue-600 text-white text-[10px] font-black tracking-widest px-4 py-1 rounded-full uppercase mb-4 shadow-lg shadow-blue-500/20">
             Aeronautical Portal 2026
           </div>
           <h1 className="text-6xl font-black text-slate-900 tracking-tighter leading-none">
