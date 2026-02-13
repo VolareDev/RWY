@@ -41,8 +41,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
       <div className="max-w-4xl w-full space-y-12">
         <div className="text-center space-y-4">
-          <div className="inline-block bg-blue-600 text-white text-[10px] font-black tracking-widest px-4 py-1 rounded-full uppercase mb-4">
-            <div className="inline-block bg-blue-600 text-white text-[10px] font-black tracking-widest px-4 py-1 rounded-full uppercase mb-4 shadow-lg shadow-blue-500/20">
+          <div className="inline-block bg-blue-600 text-white text-[10px] font-black tracking-widest px-4 py-1 rounded-full uppercase mb-4 shadow-lg shadow-blue-500/20">
             Aeronautical Portal 2026
           </div>
           <h1 className="text-6xl font-black text-slate-900 tracking-tighter leading-none">
@@ -81,6 +80,9 @@ const App: React.FC = () => {
             onClick={() => setView('notam')}
             className="group relative bg-slate-900 p-10 rounded-[3rem] shadow-xl hover:shadow-2xl transition-all border-4 border-transparent hover:border-orange-500 text-left overflow-hidden"
           >
+            <div className="absolute top-6 right-6 bg-orange-500/20 text-orange-400 text-[9px] font-black px-3 py-1 rounded-full uppercase border border-orange-500/30 z-20 animate-pulse">
+              En Desarrollo
+            </div>
             <div className="absolute top-0 right-0 p-8 text-white opacity-5 group-hover:opacity-10 transition-opacity">
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" />
@@ -93,6 +95,7 @@ const App: React.FC = () => {
               <div>
                 <h3 className="text-3xl font-black text-white tracking-tight">ArgeNotam</h3>
                 <p className="text-slate-400 font-medium text-sm mt-2">Monitoreo y análisis inteligente de NOTAMs argentinos con IA.</p>
+                <p className="text-[10px] text-orange-500/60 font-black uppercase tracking-widest mt-4">Fase Alpha: Funcionalidad experimental</p>
               </div>
               <div className="pt-4 flex items-center gap-2 text-orange-500 text-xs font-black uppercase tracking-widest">
                 Ingresar <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
