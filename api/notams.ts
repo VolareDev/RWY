@@ -1,81 +1,58 @@
-import { GoogleGenAI } from "@google/genai";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
-  const { id = "ARGENTINA", type = "GLOBAL" } = req.query;
-
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: "Missing GEMINI_API_KEY" });
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
-
-  const query =
-    type === "AIRPORT"
-      ? `aeropuerto ${id}`
-      : type === "FIR"
-      ? `FIR ${id}`
-      : `Argentina nacional`;
-
-  const prompt = `
-Usa búsqueda web (AIS / NOTAM Argentina / FIR Ezeiza / ANAC / EANA)
-para obtener NOTAMs REALES y VIGENTES.
-
-NO inventes información.
-Si no hay NOTAMs activos, devuelve lista vacía.
-
-Devuelve SOLO JSON con este formato:
-{
-  "notams": [
-    {
-      "id": "A0000/24",
-      "location": "SAEZ",
-      "message": "texto NOTAM original"
-    }
-  ],
-  "isClosed": boolean
-}
-
-Contexto específico de búsqueda:
-NOTAM ${query}
-`;
-
+export default async function handler(req: any, res: any) {
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json"
-      }
-    });
+    const { icao } = req.query;
 
-    const data = JSON.parse(response.text || "{}");
+    if (!icao || typeof icao !== "string") {
+      return res.status(400).json({
+        notams: [],
+        isClosed: false,
+        sources: [],
+        error: "Missing ICAO parameter (?icao=SAEZ)",
+      });
+    }
 
-    const adaptedNotams = (data.notams || []).map((n: any) => ({
-      id: n.id || "N/A",
-      title: n.location || id,
-      content: n.message || "",
-      raw: n.message || "",
-      category: "info",
-      topic: "AGA"
+    const FAA_BASE = process.env.FAA_API_BASE;
+
+    if (!FAA_BASE) {
+      return res.status(500).json({
+        notams: [],
+        isClosed: false,
+        sources: [],
+        error: "FAA_API_BASE not configured",
+      });
+    }
+
+    const response = await fetch(
+      `${FAA_BASE}/notams?location=${icao}&format=json`
+    );
+
+    if (!response.ok) {
+      throw new Error("FAA API request failed");
+    }
+
+    const data = await response.json();
+
+    const notams = (data.items || []).map((n: any) => ({
+      id: n.notamNumber || "UNKNOWN",
+      title: `NOTAM ${n.notamNumber || ""}`,
+      content: n.text || "",
+      raw: n.text || "",
+      category: /CLSD|CLOSED|RWY|RUNWAY/i.test(n.text)
+        ? "critical"
+        : "info",
+      topic: "AGA",
+      start: n.effectiveStart || null,
+      end: n.effectiveEnd || null,
     }));
 
+    const isClosed = notams.some((n: any) =>
+      /AD CLSD|AERODROME CLOSED|AIRPORT CLOSED/i.test(n.raw)
+    );
+
     return res.status(200).json({
-      notams: adaptedNotams,
-      isClosed: !!data.isClosed,
-      sources: []
+      notams,
+      isClosed,
+      sources: ["FAA"],
     });
   } catch (error) {
-    console.error("NOTAM serverless error:", error);
-    return res.status(500).json({
-      notams: [],
-      isClosed: false,
-      sources: []
-    });
-  }
-}
+    console.error("NOTAM API error
