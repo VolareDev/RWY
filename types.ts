@@ -1,4 +1,6 @@
 
+export type AppView = 'home' | 'rwy' | 'notam';
+
 export enum PlaceType {
   LAD = 'LAD',
   LADH = 'LADH',
@@ -18,51 +20,43 @@ export interface GeolocationPoint {
   label: string;
 }
 
-export interface DocumentationItem {
-  checked: boolean;
-  file: File | null;
-  needHelp: boolean;
+export type LocationType = 'AIRPORT' | 'FIR' | 'GLOBAL';
+
+export interface Airport {
+  icao: string;
+  iata: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  isClosed?: boolean;
 }
 
-export interface FormData {
-  documentation: {
-    propertyTitle: DocumentationItem;
-    cadastralPlan: DocumentationItem & { wantGeneration: boolean };
-    leaseContract: DocumentationItem;
-    powerOfAttorney: DocumentationItem;
-    boardMinute: DocumentationItem;
-    environmentalDeclaration: DocumentationItem;
-    paymentReceipt: DocumentationItem;
-  };
-  placeType: PlaceType | '';
-  proposedName: string;
-  wantFeasibilityCheck: boolean;
-  needEmplacementHelp: boolean;
-  needGeneralHelp: boolean;
-  responsible: {
-    surname: string;
-    name: string;
-    dni: string;
-    phone: string;
-    address: string;
-    locality: string;
-    postalCode: string;
-    province: string;
-    email: string;
-  };
-  technicalData: {
-    runwayWidth: string;
-    runwayLength: string;
-    surface: string;
-    numTrajectories: number;
-    magneticDeclination: string;
-    declinationSource: string;
-    coordinates: {
-      umbral1: GeolocationPoint;
-      umbral2: GeolocationPoint;
-      center: GeolocationPoint;
-      traj1: GeolocationPoint;
-      traj2: GeolocationPoint;
-    };
-  };
+export interface FIR {
+  icao: string;
+  name: string;
+  lat: number;
+  lng: number;
+  radius?: number;
+}
+
+export interface Notam {
+  id: string;
+  title: string;
+  content: string;
+  raw?: string;
+  category: 'critical' | 'warning' | 'info';
+  topic?: 'AGA' | 'ANS' | 'COM' | 'MET' | 'RAC' | 'OTHERS';
+  timestamp?: string;
+}
+
+export interface GroundingSource {
+  title: string;
+  uri: string;
+}
+
+export interface NotamAnalysisResponse {
+  notams: Notam[];
+  sources: GroundingSource[];
+  isClosed: boolean;
 }
