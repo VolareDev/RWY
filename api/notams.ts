@@ -16,39 +16,32 @@ export default async function handler(
 
   const query =
     type === "AIRPORT"
-      ? `Obtén los NOTAM vigentes para el aeródromo ${id} de Argentina.`
+      ? `aeropuerto ${id}`
       : type === "FIR"
-      ? `Obtén los NOTAM vigentes para la FIR ${id} de Argentina.`
-      : `Obtén los NOTAM nacionales vigentes de Argentina.`;
+      ? `FIR ${id}`
+      : `Argentina nacional`;
 
   const prompt = `
-Usa búsqueda web para obtener NOTAMs REALES y VIGENTES de Argentina.
+Usa búsqueda web (AIS / NOTAM Argentina / FIR Ezeiza / ANAC / EANA)
+para obtener NOTAMs REALES y VIGENTES.
 
-Fuente esperada:
-- AIS Argentina
-- NOTAM Argentina
-- FIR Ezeiza
-- Aeropuertos ANAC / EANA
+NO inventes información.
+Si no hay NOTAMs activos, devuelve lista vacía.
 
-Devuelve ejemplos reales si existen.
-
-Formato ESTRICTO JSON:
+Devuelve SOLO JSON con este formato:
 {
   "notams": [
     {
-      "id": "ej: A1045/24",
-      "location": "ej: SAEZ",
+      "id": "A0000/24",
+      "location": "SAEZ",
       "message": "texto NOTAM original"
     }
   ],
   "isClosed": boolean
 }
 
-Contexto específico:
-${query}
-`;
-
-Contexto: ${query}
+Contexto específico de búsqueda:
+NOTAM ${query}
 `;
 
   try {
@@ -63,7 +56,6 @@ Contexto: ${query}
 
     const data = JSON.parse(response.text || "{}");
 
-    // 🔹 ADAPTACIÓN AL FORMATO DEL FRONTEND
     const adaptedNotams = (data.notams || []).map((n: any) => ({
       id: n.id || "N/A",
       title: n.location || id,
@@ -79,7 +71,7 @@ Contexto: ${query}
       sources: []
     });
   } catch (error) {
-    console.error("NOTAM API error:", error);
+    console.error("NOTAM serverless error:", error);
     return res.status(500).json({
       notams: [],
       isClosed: false,
