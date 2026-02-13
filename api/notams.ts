@@ -22,19 +22,31 @@ export default async function handler(
       : `Obtén los NOTAM nacionales vigentes de Argentina.`;
 
   const prompt = `
-Analiza información aeronáutica pública y devuelve NOTAMs vigentes.
+Usa búsqueda web para obtener NOTAMs REALES y VIGENTES de Argentina.
 
-Devuelve ESTRICTAMENTE JSON con este formato:
+Fuente esperada:
+- AIS Argentina
+- NOTAM Argentina
+- FIR Ezeiza
+- Aeropuertos ANAC / EANA
+
+Devuelve ejemplos reales si existen.
+
+Formato ESTRICTO JSON:
 {
   "notams": [
     {
-      "id": "string",
-      "location": "string",
-      "message": "string"
+      "id": "ej: A1045/24",
+      "location": "ej: SAEZ",
+      "message": "texto NOTAM original"
     }
   ],
   "isClosed": boolean
 }
+
+Contexto específico:
+${query}
+`;
 
 Contexto: ${query}
 `;
